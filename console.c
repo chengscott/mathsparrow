@@ -1,15 +1,19 @@
 #include "console.h"
 
-void ShowWelcome() {
+void ShowBanner() {
     Font *large_font = read_font("font.txt");
     putStringLarge(large_font, 5, 2, "Math Sparrow", 10);
     putString(74, 8, "Under The MIT License (MIT)", 10, 3);
     putString(49, 9, "Copyright (c) 2015 chengscott <60510scott@gmail.com>", 10, 3);
     putString(5, 11, "================================================================================================", 10, 3);
     drawCmdWindow();
+    destroy_font(large_font);
 }
 
 void ShowSparrow() {
+    Audio bird[1];
+    openAudioFile("resource/bird.wav", bird);
+    playAudio(bird);
     Image *sparrow = read_image("resource/sparrow.pixel", "resource/sparrow.color");
     initializeKeyInput();
     // : 5~45
@@ -30,16 +34,16 @@ void ShowSparrow() {
 
 int ShowMenu() {
     initializeKeyInput();
-    int count = 5, menu = 0, i;
-    char *text[5] = { "a. 1 Player Practice", "b. 1 Player Hard", "c. 2 Player", "d. Scoreboard", "e. Help" };
+    int count = 6, menu = 0, i;
+    char *text[6] = { "a. 1 Player Practice", "b. 1 Player Hard", "c. 2 Player", "d. Scoreboard", "e. Help", "f: Exit" };
     while (1) {
         if (waitForKeyDown(0.1)) {
             char ch = getKeyEventASCII();
             if (ch == VK_SPACE) return menu;
             else if (ch == 's' || ch == VK_DOWN)
-                ++menu, menu = (menu + 4) % 4;
+                ++menu, menu = (menu + count) % count;
             else if (ch == 'w' || ch == VK_UP)
-                --menu, menu = (menu + 4) % 4;
+                --menu, menu = (menu + count) % count;
             else menu == ch - 'a';
             if (menu < 0 || menu >= count) menu = 0;
         }
@@ -78,6 +82,10 @@ void Practice_13(int unsorted) {
     drawCmdWindow();
     ShowMJ(21, listen, listen_count);
     ShowResult(listen, listen_count, userListen);
+    while (1)
+        if (waitForKeyDown(0.1))
+            if (getKeyEventASCII() == VK_SPACE) return ;
+
 }
 
 const char *mj[34] = {
@@ -131,8 +139,38 @@ void ShowResult(const int *listen, const int count, const int *userListen) {
     for (i = 0; i < 34; ++i) if (comp[i] == userListen[i]) ++res;
     sprintf(ch_res, "%d", res);
     Font *large_font = read_font("font.txt");
-    if (res == 34) putStringLarge(large_font, 10, 30, ch_res, 10n);
+    if (res == 34) putStringLarge(large_font, 10, 30, ch_res, 10);
     else putStringLarge(large_font, 10, 30, ch_res, 12);
     putStringLarge(large_font, 35, 30, "x 34", 8);
     drawCmdWindow();
+    destroy_font(large_font);
 }
+
+void ShowEnding() {
+    Image *dong = read_image("resource/mj/dong.pixel", "resource/mj/dong.color");
+    Image *nan = read_image("resource/mj/nan.pixel", "resource/mj/nan.color");
+    Image *xi = read_image("resource/mj/xi.pixel", "resource/mj/xi.color");
+    Image *bei = read_image("resource/mj/bei.pixel", "resource/mj/bei.color");
+    initializeKeyInput();
+    int pos[4] = {5, 30, 55, 80}, loc = 0;
+    while (1) {
+        clearScreen();
+        //ShowBanner();
+        show_image(dong, pos[loc], 13);
+        show_image(nan, pos[(loc + 1)%4], 13);
+        show_image(xi, pos[(loc + 2)%4], 13);
+        show_image(bei, pos[(loc + 3)%4], 13);
+        loc = (loc + 5) % 4;
+        putString(76, 43, "[Press space to continue]", 14, 2);
+        if (waitForKeyDown(0.1)) {
+            if (getKeyEventASCII() == VK_SPACE) break;
+        }
+        Sleep(700);
+        drawCmdWindow();
+        ShowBanner();
+    }
+    destroy_image(dong);
+    destroy_image(nan);
+    destroy_image(xi);
+    destroy_image(bei);
+ }

@@ -53,9 +53,7 @@ int check() {
 }
 
 int test(const int mj[13], int *list) {
-	int i, j, count = 0;//, mj[13];
-	// for (i = 0; i < 13; ++i)
-	//	mj[i] = convert(s[i]);
+	int i, j, count = 0;
 	for (i = 0; i < 34; ++i) {
 		memset(cnt, 0, sizeof(cnt));
 		for (j = 0; j < 13; ++j) ++cnt[mj[j]];

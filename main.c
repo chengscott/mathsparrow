@@ -2,21 +2,23 @@
 #include "sparrow.h"
 
 int main() {
-	ShowWelcome();
+	ShowBanner();
 	ShowSparrow();
-	clearScreen();
-	ShowWelcome();
-	int menu = ShowMenu();
-	clearScreen();
-	switch (menu) {
-    case 0:
-    case 1:
-        Practice_13(menu);
-        break;
+	while (1) {
+        clearScreen();
+	    ShowBanner();
+	    int menu = ShowMenu();
+	    clearScreen();
+	    switch (menu) {
+        case 0:
+        case 1:
+            Practice_13(menu);
+            break;
+	    }
+	    if (menu == 5) break;
 	}
-	/*string s[13];
-	for (int i = 0; i < 13; ++i) cin >> s[i];
-	int list[13], list_count = test(s, list);
-	cout << 1;*/
+	clearScreen();
+	ShowBanner();
+	ShowEnding();
 	return 0;
 }

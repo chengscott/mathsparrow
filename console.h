@@ -10,10 +10,11 @@
 #include "kb_input2.h"
 #include "font.h"
 #include "image.h"
-void ShowWelcome();
+void ShowBanner();
 void ShowSparrow();
 int ShowMenu();
 void Practice_13(int);
 void ShowUserInput();
 void ShowMJ(const int, const int*, int);
 void ShowResult(const int*, const int, const int *);
+void ShowEnding();
