@@ -15,27 +15,32 @@ void ShowSparrow() {
     openAudioFile("resource/bird.wav", bird);
     playAudio(bird);
     Image *sparrow = read_image("resource/sparrow.pixel", "resource/sparrow.color");
+    Font *large_font = read_font("font.txt");
     initializeKeyInput();
-    // : 5~45
+    // loc: 5~45
     int loc = 45;
     while (1) {
-        //clearScreen();
+        clearScreen();
         if (loc == 5) loc = 45;
         show_image(sparrow, loc--, 13);
-        putString(76, 53, "[Press space to continue]", 14, 2);
+        // putString(76, 53, "[Press space to continue]", 14, 2);
+        if (loc % 6 > 3) putStringLarge(large_font, 10, 53, "Press Space", 10);
         if (waitForKeyDown(0.1)) {
             if (getKeyEventASCII() == VK_SPACE) break;
         }
-        Sleep(100);
         drawCmdWindow();
+        ShowBanner();
+        Sleep(100);
     }
+    destroy_font(large_font);
     destroy_image(sparrow);
 }
 
 int ShowMenu() {
+    Font *large_font = read_font("font.txt");
     initializeKeyInput();
     int count = 6, menu = 0, i;
-    char *text[6] = { "a. 1 Player Practice", "b. 1 Player Hard", "c. 2 Player", "d. Scoreboard", "e. Help", "f: Exit" };
+    char *text[6] = { "a. One Player Practice", "b. One Player Hard", "c. Two Players", "d. Scoreboard", "e. Help", "f: Exit" };
     while (1) {
         if (waitForKeyDown(0.1)) {
             char ch = getKeyEventASCII();
@@ -48,25 +53,40 @@ int ShowMenu() {
             if (menu < 0 || menu >= count) menu = 0;
         }
         for (i = 0; i < count; ++i) {
-            if (i == menu) putString(5, 13 + i * 2, text[i], 14, 2);
-            else putString(5, 13 + i * 2, text[i], 10, 3);
+            if (i == menu) putStringLarge(large_font, 8, 13 + i * 8, text[i], 14);
+            else  putStringLarge(large_font, 8, 13 + i * 8, text[i], 7);
+            // if (i == menu) putString(5, 13 + i * 2, text[i], 14, 2);
+            // else putString(5, 13 + i * 2, text[i], 10, 3);
         }
         drawCmdWindow();
     }
+    destroy_font(large_font);
 }
 
 int cmp (const void * a, const void * b) { return ( *(int*)a - *(int*)b ); }
 
 void Practice_13(int unsorted) {
     putString(10, 5, "牌面:", 14, 2);
-    int i, hand[34] = {}, list[13];
+    int i, j, hand[34] = {}, list[13], idx;
     srand(time(NULL));
     for (i = 0; i < 13; 1) {
-        int idx = rand() % 34;
-        if (hand[idx] == 4) continue;
-        list[i] = idx, ++hand[idx], ++i;
+        int rnd = rand(), num = 3;
+        if (rnd % 3 == 0) idx = rnd % 34;
+        else if (rnd % 3 == 1) idx = (idx + 35) % 34;
+        else if (rnd % 3 == 2) idx = (idx + 33) % 34;
+        if (hand[idx] + num > 4) continue;
+        for (j = 0; j < num; ++j) list[i++] = idx;
+        hand[idx] += num;
     }
-    if (!unsorted) qsort(list, 13, sizeof(int), cmp);
+    // shuffle or sort
+    if (unsorted) {
+        for (i = 0; i < 13; ++i) {
+            int a = rand() % 13, b = rand() % 13;
+            list[a] ^= list[b] ^= list[a] ^= list[b];
+        }
+    }
+    else
+        qsort(list, 13, sizeof(int), cmp);
     ShowMJ(10, list, 13);
     // Computer listen
     int listen[34] = {};
@@ -94,6 +114,14 @@ const char *mj[34] = {
 	"1萬", "2萬", "3萬", "4萬", "5萬", "6萬", "7萬", "8萬", "9萬",
 	"東風", "南風", "西風", "北風",
 	"中", "發", "  "
+};
+
+const char* filename[34] = {
+	"1T", "2T", "3T", "4T", "5T", "6T", "7T", "8T", "9T",
+	"1S", "2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S",
+	"1W", "2W", "3W", "4W", "5W", "6W", "7W", "8W", "9W",
+	"DONG", "NAN", "XI", "BEI",
+	"ZHONG", "FA", "BAI"
 };
 
 void ShowMJ(const int y, const int* list, int count) {
@@ -147,30 +175,33 @@ void ShowResult(const int *listen, const int count, const int *userListen) {
 }
 
 void ShowEnding() {
-    Image *dong = read_image("resource/mj/dong.pixel", "resource/mj/dong.color");
-    Image *nan = read_image("resource/mj/nan.pixel", "resource/mj/nan.color");
-    Image *xi = read_image("resource/mj/xi.pixel", "resource/mj/xi.color");
-    Image *bei = read_image("resource/mj/bei.pixel", "resource/mj/bei.color");
+    Image *img_mj[34];
+    int i;
+    for (i = 0; i < 34; ++i) {
+        char pixel[51] = "resource/mj/", color[51] = "resource/mj/";
+        strcat(pixel, filename[i]);
+        strcat(pixel, ".pixel");
+        strcat(color, filename[i]);
+        strcat(color, ".color");
+        img_mj[i] = read_image(pixel, color);
+    }
+    srand(time(NULL));
     initializeKeyInput();
-    int pos[4] = {5, 30, 55, 80}, loc = 0;
     while (1) {
         clearScreen();
-        //ShowBanner();
-        show_image(dong, pos[loc], 13);
-        show_image(nan, pos[(loc + 1)%4], 13);
-        show_image(xi, pos[(loc + 2)%4], 13);
-        show_image(bei, pos[(loc + 3)%4], 13);
-        loc = (loc + 5) % 4;
-        putString(76, 43, "[Press space to continue]", 14, 2);
-        if (waitForKeyDown(0.1)) {
+        show_image(img_mj[rand() % 34], 5, 13);
+        show_image(img_mj[rand() % 34], 30, 13);
+        show_image(img_mj[rand() % 34], 55, 13);
+        show_image(img_mj[rand() % 34], 80, 13);
+        putString(80, 43, "[Press space to exit]", 14, 2);
+        if (waitForKeyDown(0.7)) {
             if (getKeyEventASCII() == VK_SPACE) break;
         }
-        Sleep(700);
         drawCmdWindow();
         ShowBanner();
+        Sleep(700);
     }
-    destroy_image(dong);
-    destroy_image(nan);
-    destroy_image(xi);
-    destroy_image(bei);
+    for (i = 0; i < 34; ++i) {
+        destroy_image(img_mj[i]);
+    }
  }
