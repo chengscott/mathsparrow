@@ -10,7 +10,8 @@ int main() {
 	clearScreen();
 	switch (menu) {
     case 0:
-        Practice_13();
+    case 1:
+        Practice_13(menu);
         break;
 	}
 	/*string s[13];

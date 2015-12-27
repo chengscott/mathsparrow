@@ -7,4 +7,4 @@ int search(int);
 // @return: 1(?), 0(??)
 int check();
 // @return: ? list count
-int test(const char *[13], int *list);
+int test(const int *, int *list);

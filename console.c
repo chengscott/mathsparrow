@@ -30,15 +30,15 @@ void ShowSparrow() {
 
 int ShowMenu() {
     initializeKeyInput();
-    int count = 4, menu = 0, i;
-    char *text[4] = { "a. 1 Player", "b. 2 Player", "c. Scoreboard", "d. Help" };
+    int count = 5, menu = 0, i;
+    char *text[5] = { "a. 1 Player Practice", "b. 1 Player Hard", "c. 2 Player", "d. Scoreboard", "e. Help" };
     while (1) {
         if (waitForKeyDown(0.1)) {
             char ch = getKeyEventASCII();
             if (ch == VK_SPACE) return menu;
-            else if (ch == 's' || ch == VK_UP)
+            else if (ch == 's' || ch == VK_DOWN)
                 ++menu, menu = (menu + 4) % 4;
-            else if (ch == 'w' || ch == VK_DOWN)
+            else if (ch == 'w' || ch == VK_UP)
                 --menu, menu = (menu + 4) % 4;
             else menu == ch - 'a';
             if (menu < 0 || menu >= count) menu = 0;
@@ -51,7 +51,10 @@ int ShowMenu() {
     }
 }
 
-void Practice_13() {
+int cmp (const void * a, const void * b) { return ( *(int*)a - *(int*)b ); }
+
+void Practice_13(int unsorted) {
+    putString(10, 5, "牌面:", 14, 2);
     int i, hand[34] = {}, list[13];
     srand(time(NULL));
     for (i = 0; i < 13; 1) {
@@ -59,54 +62,77 @@ void Practice_13() {
         if (hand[idx] == 4) continue;
         list[i] = idx, ++hand[idx], ++i;
     }
-    ShowMJ(list, 13);
-    // Image *dong = read_image("resource/mj/dong.pixel", "resource/mj/dong.color");
-    // putString(10, 10, "東", 14, 2);
-    // drawCmdWindow();
+    if (!unsorted) qsort(list, 13, sizeof(int), cmp);
+    ShowMJ(10, list, 13);
+    // Computer listen
+    int listen[34] = {};
+    int listen_count = test(list, listen);
+    // User listen
+    int userListen[34] = {};
+    ShowUserInput(userListen);
+    // Show Computer listen
+    char str_listen[2];
+    putString(10, 19, "電腦聽   張牌:", 14, 2);
+    sprintf(str_listen, "%d", listen_count);
+    putString(17, 19, str_listen, 14, 2);
+    drawCmdWindow();
+    ShowMJ(21, listen, listen_count);
+    ShowResult(listen, listen_count, userListen);
 }
 
 const char *mj[34] = {
 	"1條", "2條", "3條", "4條", "5條", "6條", "7條", "8條", "9條",
 	"1索", "2索", "3索", "4索", "5索", "6索", "7索", "8索", "9索",
 	"1萬", "2萬", "3萬", "4萬", "5萬", "6萬", "7萬", "8萬", "9萬",
-	"東風", "能封", "西風", "北風",
+	"東風", "南風", "西風", "北風",
 	"中", "發", "  "
 };
 
-void ShowMJ(const int* list, int count) {
-    int i;
-    for (i = 0; i < count; ++i)
-        putString(10 + i * 5b, 10, mj[list[i]], 14, 2);
+void ShowMJ(const int y, const int* list, int count) {
+    if (count == 0) {
+        putString(10, y, "N", 14, 2);
+    } else {
+        int i;
+        for (i = 0; i < count; ++i)
+            putString(10 + i * 5, y, mj[list[i]], 14, 2);
+        // Image *dong = read_image("resource/mj/dong.pixel", "resource/mj/dong.color");
+    }
     drawCmdWindow();
 }
-/*
-void ShowTable_13() {
-	ShowBanner();
-	cout << " =============================================================================" << endl;
-	cout << " ||                                    W                                    ||" << endl;
-	cout << " ||                                                                         ||" << endl;
-	cout << " ||                                                                         ||" << endl;
-	cout << " ||                                                                         ||" << endl;
-	cout << " ||                                                                         ||" << endl;
-	cout << " ||                                                                         ||" << endl;
-	cout << " ||                                                                         ||" << endl;
-	cout << " || N                                                                     S ||" << endl;
-	cout << " ||                                                                         ||" << endl;
-	cout << " ||                                                                         ||" << endl;
-	cout << " ||                                                                         ||" << endl;
-	cout << " ||                                                                         ||" << endl;
-	cout << " ||                                    E                                    ||" << endl;
+
+void ShowUserInput(int *listen) {
+    int i, cur = -1;
+    while (1) {
+        if (waitForKeyDown(0.1)) {
+            char ch = getKeyEventASCII();
+            if (ch == VK_SPACE && cur == -1) return ;
+            else if (ch == VK_SPACE) listen[cur] = !listen[cur] ;
+            else if (ch == 's' || ch == VK_DOWN) cur = -1;
+            else if (ch == 'w' || ch == VK_UP) cur = 0;
+            else if (ch == 'a' || ch == VK_LEFT) --cur, cur = (cur + 34) % 34;
+            else if (ch == 'd' || ch == VK_RIGHT) ++cur, cur = (cur + 34) % 34;
+        }
+        putString(10, 15, "請選擇可能聽牌:", 14, 2);
+        for (i = 0; i < 34; ++i) {
+            if (cur == i) putString(10 + i * 5, 17, mj[i], 10, 3);
+            else if (listen[i]) putString(10 + i * 5, 17, mj[i], 15, 3);
+            else putString(10 + i * 5, 17, mj[i], 14, 2);
+        }
+        if (cur == -1) putString(10, 19, "確定", 15, 3);
+        else putString(10, 19, "確定", 14, 2);
+        drawCmdWindow();
+    }
 }
 
-void ShowMJ(const int* list, int cards) {
-	for (int i = 0; i < cards; ++i) cout << " -----";
-	cout << endl;
-	for (int i = 0; i < cards; ++i) cout << " | " << mahjong[list[i]][0] << " |";
-	cout << endl;
-	for (int i = 0; i < cards; ++i) cout << " | " << mahjong[list[i]][1] << " |";
-	cout << endl;
-	for (int i = 0; i < cards; ++i) cout << " -----";
-	cout << endl;
+void ShowResult(const int *listen, const int count, const int *userListen) {
+    int i, comp[34] = {}, res = 0;
+    char ch_res[5];
+    for (i = 0; i < count; ++i) comp[listen[i]] = 1;
+    for (i = 0; i < 34; ++i) if (comp[i] == userListen[i]) ++res;
+    sprintf(ch_res, "%d", res);
+    Font *large_font = read_font("font.txt");
+    if (res == 34) putStringLarge(large_font, 10, 30, ch_res, 10n);
+    else putStringLarge(large_font, 10, 30, ch_res, 12);
+    putStringLarge(large_font, 35, 30, "x 34", 8);
+    drawCmdWindow();
 }
-
-*/

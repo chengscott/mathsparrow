@@ -21,7 +21,7 @@ int convert(const char *s) {
 int search(int dep) {
     int i;
 	for (i = 0; i < 34; ++i)
-		// ¨è¤l
+		// triplet
 		if (cnt[i] >= 3) {
 			if (dep == 3) return 1;
 			cnt[i] -= 3;
@@ -30,7 +30,7 @@ int search(int dep) {
 		}
 	for (i = 0; i <= 24; ++i)
 		if (i % 9 <= 6 && cnt[i] > 0 && cnt[i + 1] > 0 && cnt[i + 2] > 0) {
-			// ¶¶¤l
+			// sequence
 			if (dep == 3) return 1;
 			--cnt[i], --cnt[i + 1], --cnt[i + 2];
 			if (search(dep + 1)) return 1;
@@ -42,7 +42,7 @@ int search(int dep) {
 int check() {
     int i;
 	for (i = 0; i < 34; ++i) {
-		// ³¶ÀY
+		// eye
 		if (cnt[i] >= 2) {
 			cnt[i] -= 2;
 			if (search(0)) return 1;
@@ -52,14 +52,14 @@ int check() {
 	return 0;
 }
 
-int test(const char *s[13], int *list) {
-	int i, j, mj[15], count = 0;
-	for (i = 0; i < 13; ++i)
-		mj[i] = convert(s[i]);
+int test(const int mj[13], int *list) {
+	int i, j, count = 0;//, mj[13];
+	// for (i = 0; i < 13; ++i)
+	//	mj[i] = convert(s[i]);
 	for (i = 0; i < 34; ++i) {
 		memset(cnt, 0, sizeof(cnt));
 		for (j = 0; j < 13; ++j) ++cnt[mj[j]];
-		// ºb
+		// kong
 		if (cnt[i] >= 4) continue;
 		++cnt[i];
 		if (check()) list[count++] = i;
