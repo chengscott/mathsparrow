@@ -1,4 +1,3 @@
-#pragma once
 #include <stdio.h>
 // @return: id, -1(not found)
 int convert(const char*);

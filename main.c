@@ -14,6 +14,9 @@ int main() {
         case 1:
             Practice_13(menu);
             break;
+        case 4:
+            ShowHelp();
+            break;
 	    }
 	    if (menu == 5) break;
 	}

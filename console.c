@@ -40,7 +40,7 @@ int ShowMenu() {
     Font *large_font = read_font("font.txt");
     initializeKeyInput();
     int count = 6, menu = 0, i;
-    char *text[6] = { "a. One Player Practice", "b. One Player Hard", "c. Two Players", "d. Scoreboard", "e. Help", "f: Exit" };
+    char *text[6] = { "a. Beginner Mode", "b. Expert Mode", "c. Real Mode", "d. Scoreboard", "e. Help", "f: Exit" };
     while (1) {
         if (waitForKeyDown(0.1)) {
             char ch = getKeyEventASCII();
@@ -55,15 +55,13 @@ int ShowMenu() {
         for (i = 0; i < count; ++i) {
             if (i == menu) putStringLarge(large_font, 8, 13 + i * 8, text[i], 14);
             else  putStringLarge(large_font, 8, 13 + i * 8, text[i], 7);
-            // if (i == menu) putString(5, 13 + i * 2, text[i], 14, 2);
-            // else putString(5, 13 + i * 2, text[i], 10, 3);
         }
         drawCmdWindow();
     }
     destroy_font(large_font);
 }
 
-int cmp (const void * a, const void * b) { return ( *(int*)a - *(int*)b ); }
+int cmp (const void *a, const void *b) { return (*(int *)a - *(int *)b); }
 
 void Practice_13(int unsorted) {
     putString(10, 5, "牌面:", 14, 2);
@@ -96,11 +94,11 @@ void Practice_13(int unsorted) {
     ShowUserInput(userListen);
     // Show Computer listen
     char str_listen[2];
-    putString(10, 19, "電腦聽   張牌:", 14, 2);
+    putString(10, 21, "電腦聽   張牌:", 14, 2);
     sprintf(str_listen, "%d", listen_count);
-    putString(17, 19, str_listen, 14, 2);
+    putString(17, 21, str_listen, 14, 2);
     drawCmdWindow();
-    ShowMJ(21, listen, listen_count);
+    ShowMJ(24, listen, listen_count);
     ShowResult(listen, listen_count, userListen);
     while (1)
         if (waitForKeyDown(0.1))
@@ -109,11 +107,11 @@ void Practice_13(int unsorted) {
 }
 
 const char *mj[34] = {
-	"1條", "2條", "3條", "4條", "5條", "6條", "7條", "8條", "9條",
-	"1索", "2索", "3索", "4索", "5索", "6索", "7索", "8索", "9索",
-	"1萬", "2萬", "3萬", "4萬", "5萬", "6萬", "7萬", "8萬", "9萬",
+	" 1條", " 2條", " 3條", " 4條", " 5條", " 6條", " 7條", " 8條", " 9條",
+	" 1索", " 2索", " 3索", " 4索", " 5索", " 6索", " 7索", " 8索", " 9索",
+	"一萬", "二萬", "三萬", "四萬", "五萬", "六萬", "七萬", "八萬", "九萬",
 	"東風", "南風", "西風", "北風",
-	"中", "發", "  "
+	" 中 ", " 發 ", "　　"
 };
 
 const char* filename[34] = {
@@ -129,9 +127,11 @@ void ShowMJ(const int y, const int* list, int count) {
         putString(10, y, "N", 14, 2);
     } else {
         int i;
-        for (i = 0; i < count; ++i)
+        for (i = 0; i < count; ++i) {
+            putString(10 + i * 5, y - 1, "　　", 14, 2);
             putString(10 + i * 5, y, mj[list[i]], 14, 2);
-        // Image *dong = read_image("resource/mj/dong.pixel", "resource/mj/dong.color");
+            putString(10 + i * 5, y + 1, "　　", 14, 2);
+        }
     }
     drawCmdWindow();
 }
@@ -150,12 +150,22 @@ void ShowUserInput(int *listen) {
         }
         putString(10, 15, "請選擇可能聽牌:", 14, 2);
         for (i = 0; i < 34; ++i) {
-            if (cur == i) putString(10 + i * 5, 17, mj[i], 10, 3);
-            else if (listen[i]) putString(10 + i * 5, 17, mj[i], 15, 3);
-            else putString(10 + i * 5, 17, mj[i], 14, 2);
+            if (cur == i) {
+                putString(10 + i * 5, 17, "　　", 10, 3);
+                putString(10 + i * 5, 18, mj[i], 10, 3);
+                putString(10 + i * 5, 19, "　　", 10, 3);
+            } else if (listen[i]) {
+                putString(10 + i * 5, 17, "　　", 15, 3);
+                putString(10 + i * 5, 18, mj[i], 15, 3);
+                putString(10 + i * 5, 19, "　　", 15, 3);
+            } else {
+                putString(10 + i * 5, 17, "　　", 14, 2);
+                putString(10 + i * 5, 18, mj[i], 14, 2);
+                putString(10 + i * 5, 19, "　　", 14, 2);
+            }
         }
-        if (cur == -1) putString(10, 19, "確定", 15, 3);
-        else putString(10, 19, "確定", 14, 2);
+        if (cur == -1) putString(10, 21, "確定", 15, 3);
+        else putString(10, 21, "確定", 14, 2);
         drawCmdWindow();
     }
 }
@@ -204,4 +214,18 @@ void ShowEnding() {
     for (i = 0; i < 34; ++i) {
         destroy_image(img_mj[i]);
     }
+ }
+
+ void ShowHelp() {
+     clearScreen();
+     ShowBanner();
+     putString(5, 13, "〈數學麻雀〉程式操作說明", 14, 2);
+     putString(5, 15, "上(W), 下(S), 左(A), 右(D), 選擇(SPACE)", 14, 2);
+     putString(5, 18, "〈數學麻雀〉程式創作動機", 14, 2);
+     putString(5, 20, "　　這個程式的作者，鄭余玄 (chengscott)，因為打麻將時常放槍，於是數學系雀聖品帝，就說「可以不要再放槍了嗎，趕快去寫一隻程式來幫你算牌，這樣就不會放槍了！」", 14, 2);
+     putString(5, 22, "於是這就成為了我的Final Project，名為「mathsparrow」，程式碼在github上開源，使用MIT授權。", 14, 2);
+     putString(75, 30, "[Press space to continue]", 14, 2);
+     drawCmdWindow();
+     initializeKeyInput();
+     while (waitForKeyDown(100)) if (getKeyEventASCII() == VK_SPACE) return;
  }

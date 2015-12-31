@@ -18,3 +18,4 @@ void ShowUserInput();
 void ShowMJ(const int, const int*, int);
 void ShowResult(const int*, const int, const int *);
 void ShowEnding();
+void ShowHelp();
