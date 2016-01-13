@@ -17,12 +17,13 @@ int main() {
             Practice(16);
             break;
         case 2:
+            ShowScoreboard();
             break;
-        case 4:
+        case 3:
             ShowHelp();
             break;
 	    }
-	    if (menu == 5) break;
+	    if (menu == 4) break;
 	}
 	clearScreen();
 	ShowBanner();

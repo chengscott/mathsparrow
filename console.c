@@ -39,8 +39,8 @@ void ShowSparrow() {
 int ShowMenu() {
     Font *large_font = read_font("font.txt");
     initializeKeyInput();
-    int count = 6, menu = 0, i;
-    char *text[6] = { "a. 13 Practice Mode", "b. 16 Practice Mode", "c. Real Mode", "d. Scoreboard", "e. Help", "f: Exit" };
+    int count = 5, menu = 0, i;
+    char *text[11] = { "a. 13 Practice Mode", "b. 16 Practice Mode", "c. Scoreboard", "d. Help", "e: Exit" };
     while (1) {
         if (waitForKeyDown(0.1)) {
             char ch = getKeyEventASCII();
@@ -64,12 +64,13 @@ int ShowMenu() {
 int cmp (const void *a, const void *b) { return (*(int *)a - *(int *)b); }
 
 void Practice(int type) {
+    // Show title
     char str_type[2];
     sprintf(str_type, "%d", type);
     Font *large_font = read_font("font.txt");
     putStringLarge(large_font, 5, 2, str_type, 14);
     putStringLarge(large_font, 5, 2, "   Practice Mode", 14);
-    destroy_font(large_font);
+    // Show collection
     putString(5, 9, "牌面:", 14, 2);
     int i, j, hand[34] = {}, list[16], idx;
     srand(time(NULL));
@@ -87,17 +88,35 @@ void Practice(int type) {
     // Computer listen
     int listen[34] = {};
     int listen_count = test(list, listen, type);
+    // Set timer
+    clock_t timer1, timer2;
+    timer1 = clock();
     // User listen
     int userListen[34] = {};
     ShowUserInput(userListen);
     // Show Computer listen
-    char str_listen[2];
+    char buff[2];
     putString(5, 21, "電腦聽   張牌:", 14, 2);
-    sprintf(str_listen, "%d", listen_count);
-    putString(12, 21, str_listen, 14, 2);
+    sprintf(buff, "%d", listen_count);
+    putString(12, 21, buff, 14, 2);
     drawCmdWindow();
     ShowMJ(24, listen, listen_count);
-    ShowResult(listen, listen_count, userListen);
+    // Show timer
+    timer2 = clock();
+    int time = (timer2 - timer1)/(CLOCKS_PER_SEC);
+    sprintf(buff, "%d", time);
+    putStringLarge(large_font, 75, 30, buff, 11);
+    putStringLarge(large_font, 78, 30, " sec", 11);
+    // Show result and record
+    if (ShowResult(listen, listen_count, userListen) == 34) {
+        if (time > 1000) time = 999;
+        int score[6];
+        ReadScore(score);
+        if (score[((type == 16) + 1) * 3 - 1] > time)
+            score[((type == 16) + 1) * 3 - 1] = time;
+        SaveScore(score);
+    }
+    destroy_font(large_font);
     while (1)
         if (waitForKeyDown(0.1))
             if (getKeyEventASCII() == VK_SPACE) return ;
@@ -168,7 +187,7 @@ void ShowUserInput(int *listen) {
     }
 }
 
-void ShowResult(const int *listen, const int count, const int *userListen) {
+int ShowResult(const int *listen, const int count, const int *userListen) {
     int i, comp[34] = {}, res = 0;
     char ch_res[5];
     for (i = 0; i < count; ++i) comp[listen[i]] = 1;
@@ -180,6 +199,7 @@ void ShowResult(const int *listen, const int count, const int *userListen) {
     putStringLarge(large_font, 35, 30, "x 34", 8);
     drawCmdWindow();
     destroy_font(large_font);
+    return res;
 }
 
 void ShowEnding() {
@@ -217,13 +237,70 @@ void ShowEnding() {
  void ShowHelp() {
      clearScreen();
      ShowBanner();
-     putString(5, 13, "〈數學麻雀〉程式操作說明", 14, 2);
+     putString(5, 13, "〈數學麻雀〉程式操作說明", 14, 4);
      putString(5, 15, "上(W), 下(S), 左(A), 右(D), 選擇(SPACE)", 14, 2);
-     putString(5, 18, "〈數學麻雀〉程式創作動機", 14, 2);
-     putString(5, 20, "　　這個程式的作者，鄭余玄 (chengscott)，因為打麻將時常放槍，於是數學系雀聖品帝，就說「可以不要再放槍了嗎，趕快去寫一隻程式來幫你算牌，這樣就不會放槍了！」", 14, 2);
-     putString(5, 22, "於是這就成為了我的Final Project，名為「mathsparrow」，程式碼在github上開源，使用MIT授權。", 14, 2);
-     putString(75, 30, "[Press space to continue]", 14, 2);
+     putString(5, 17, "〈數學麻雀〉模式說明", 14, 4);
+     putString(5, 19, "模式A: 練習13ㄠ(13張)聽牌，選出正確聽牌組，若無，則直接按確定", 14, 2);
+     putString(5, 21, "模式B: 練習麻將(16張)聽牌，選出正確聽牌組，若無，則直接按確定", 14, 2);
+     putString(5, 23, "模式C: 記分板", 14, 2);
+     putString(5, 25, "模式D: 說明", 14, 2);
+     putString(5, 27, "模式E: 離場麻將動畫", 14, 2);
+     putString(5, 29, "〈數學麻雀〉程式創作動機", 14, 4);
+     putString(5, 31, "　　這個程式的作者，鄭余玄 (chengscott)，因為打麻將時常放槍，於是數學系雀聖品帝，就說「可以不要再放槍了嗎，趕快去寫一隻程式來幫你算牌，這樣就不會放槍了！」", 14, 2);
+     putString(5, 33, "於是這就成為了我的Final Project，名為「mathsparrow」，程式碼在github上開源，使用MIT授權。", 14, 2);
+     putString(75, 39, "[Press space to continue]", 14, 2);
      drawCmdWindow();
      initializeKeyInput();
      while (waitForKeyDown(100)) if (getKeyEventASCII() == VK_SPACE) return;
  }
+
+void ReadScore(int *score) {
+    FILE *file = fopen("score.txt", "r");
+    int i, n;
+    for (i = 0; i < 6; ++i) {
+        fscanf(file, "%d", &n);
+        if (n > 0 && n < 1000) score[i] = n;
+        else score[i] = 999;
+    }
+    fclose(file);
+}
+
+void SaveScore(int *score) {
+    qsort(score, 3, sizeof(int), cmp);
+    qsort(score + 3, 3, sizeof(int), cmp);
+    FILE *file = fopen("score.txt", "w+");
+    int i;
+    for (i = 0; i < 6; ++i)
+        fprintf(file, "%d ", score[i]);
+    fclose(file);
+}
+
+void ShowScoreboard() {
+    clearScreen();
+    int list[6], i;
+    char score[6][4];
+    ReadScore(&list);
+    for (i = 0; i < 6; ++i)
+        sprintf(score[i], "%d", list[i]);
+    Font *large_font = read_font("font.txt");
+    putStringLarge(large_font, 5, 2, "Scoreboard", 5);
+    putStringLarge(large_font, 5, 9, "13 Practice Mode", 14);
+    putStringLarge(large_font, 5, 15, "    sec", 11);
+    putStringLarge(large_font, 5, 15, score[0], 11);
+    putStringLarge(large_font, 5, 21, "    sec", 11);
+    putStringLarge(large_font, 5, 21, score[1], 11);
+    putStringLarge(large_font, 5, 27, "    sec", 11);
+    putStringLarge(large_font, 5, 27, score[2], 11);
+    putStringLarge(large_font, 5, 35, "16 Practice Mode", 14);
+    putStringLarge(large_font, 5, 42, "    sec", 11);
+    putStringLarge(large_font, 5, 42, score[3], 11);
+    putStringLarge(large_font, 5, 48, "    sec", 11);
+    putStringLarge(large_font, 5, 48, score[4], 11);
+    putStringLarge(large_font, 5, 54, "    sec", 11);
+    putStringLarge(large_font, 5, 54, score[5], 11);
+    destroy_font(large_font);
+    putString(107, 57, "[Press space to continue]", 14, 2);
+    drawCmdWindow();
+    initializeKeyInput();
+    while (waitForKeyDown(100)) if (getKeyEventASCII() == VK_SPACE) return;
+}

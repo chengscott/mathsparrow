@@ -156,10 +156,10 @@
 	<stdio.h>
 	<stdlib.h>
 
-1452704017 source:d:\repo\mathsparrow\console.c
+1452710329 source:d:\repo\mathsparrow\console.c
 	"console.h"
 
-1452702492 d:\repo\mathsparrow\console.h
+1452710321 d:\repo\mathsparrow\console.h
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
@@ -211,7 +211,7 @@
 1452699315 source:d:\repo\mathsparrow\kb_input2.c
 	"kb_input2.h"
 
-1452702492 source:d:\repo\mathsparrow\main.c
+1452706411 source:d:\repo\mathsparrow\main.c
 	"console.h"
 	"sparrow.h"
 
