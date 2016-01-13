@@ -11,8 +11,12 @@ int main() {
 	    clearScreen();
 	    switch (menu) {
         case 0:
+            Practice(13);
+            break;
         case 1:
-            Practice_13(menu);
+            Practice(16);
+            break;
+        case 2:
             break;
         case 4:
             ShowHelp();

@@ -18,49 +18,49 @@ int convert(const char *s) {
 	return -1;
 }
 
-int search(int dep) {
+int search(int dep, int type) {
     int i;
 	for (i = 0; i < 34; ++i)
 		// triplet
 		if (cnt[i] >= 3) {
-			if (dep == 3) return 1;
+			if (dep == type/3 - 1) return 1;
 			cnt[i] -= 3;
-			if (search(dep + 1)) return 1;
+			if (search(dep + 1, type)) return 1;
 			cnt[i] += 3;
 		}
 	for (i = 0; i <= 24; ++i)
 		if (i % 9 <= 6 && cnt[i] > 0 && cnt[i + 1] > 0 && cnt[i + 2] > 0) {
 			// sequence
-			if (dep == 3) return 1;
+			if (dep == type/3 - 1) return 1;
 			--cnt[i], --cnt[i + 1], --cnt[i + 2];
-			if (search(dep + 1)) return 1;
+			if (search(dep + 1, type)) return 1;
 			++cnt[i], ++cnt[i + 1], ++cnt[i + 2];
 		}
 	return 0;
 }
 
-int check() {
+int check(int type) {
     int i;
 	for (i = 0; i < 34; ++i) {
 		// eye
 		if (cnt[i] >= 2) {
 			cnt[i] -= 2;
-			if (search(0)) return 1;
+			if (search(0, type)) return 1;
 			cnt[i] += 2;
 		}
 	}
 	return 0;
 }
 
-int test(const int mj[13], int *list) {
+int test(const int *mj, int *list, int size) {
 	int i, j, count = 0;
 	for (i = 0; i < 34; ++i) {
 		memset(cnt, 0, sizeof(cnt));
-		for (j = 0; j < 13; ++j) ++cnt[mj[j]];
+		for (j = 0; j < size; ++j) ++cnt[mj[j]];
 		// kong
 		if (cnt[i] >= 4) continue;
 		++cnt[i];
-		if (check()) list[count++] = i;
+		if (check(size)) list[count++] = i;
 		--cnt[i];
 	}
 	return count;

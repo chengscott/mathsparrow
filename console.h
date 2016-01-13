@@ -13,7 +13,7 @@
 void ShowBanner();
 void ShowSparrow();
 int ShowMenu();
-void Practice_13(int);
+void Practice(int);
 void ShowUserInput();
 void ShowMJ(const int, const int*, int);
 void ShowResult(const int*, const int, const int *);

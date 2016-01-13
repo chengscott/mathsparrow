@@ -147,3 +147,77 @@
 1451543742 source:d:\repos\mathsparrow\sparrow.c
 	"sparrow.h"
 
+1452699315 source:d:\repo\mathsparrow\audio.c
+	"audio.h"
+
+1452699315 d:\repo\mathsparrow\audio.h
+	<windows.h>
+	<mmsystem.h>
+	<stdio.h>
+	<stdlib.h>
+
+1452704017 source:d:\repo\mathsparrow\console.c
+	"console.h"
+
+1452702492 d:\repo\mathsparrow\console.h
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<string.h>
+	<ctype.h>
+	<windows.h>
+	<mmsystem.h>
+	"audio.h"
+	"console_draw3.h"
+	"kb_input2.h"
+	"font.h"
+	"image.h"
+
+1452699315 d:\repo\mathsparrow\console_draw3.h
+
+1452699315 d:\repo\mathsparrow\kb_input2.h
+	<windows.h>
+
+1452699315 d:\repo\mathsparrow\font.h
+
+1452699315 d:\repo\mathsparrow\image.h
+
+1452699315 source:d:\repo\mathsparrow\console_draw3.c
+	<windows.h>
+	<string.h>
+	"console_draw3.h"
+
+1452699315 source:d:\repo\mathsparrow\font.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<string.h>
+	<ctype.h>
+	<windows.h>
+	"console_draw3.h"
+	"kb_input2.h"
+	"font.h"
+
+1452699315 source:d:\repo\mathsparrow\image.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<string.h>
+	<windows.h>
+	"console_draw3.h"
+	"kb_input2.h"
+	"image.h"
+
+1452699315 source:d:\repo\mathsparrow\kb_input2.c
+	"kb_input2.h"
+
+1452702492 source:d:\repo\mathsparrow\main.c
+	"console.h"
+	"sparrow.h"
+
+1452703270 d:\repo\mathsparrow\sparrow.h
+	<stdio.h>
+
+1452703404 source:d:\repo\mathsparrow\sparrow.c
+	"sparrow.h"
+

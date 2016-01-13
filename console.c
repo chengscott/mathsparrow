@@ -40,7 +40,7 @@ int ShowMenu() {
     Font *large_font = read_font("font.txt");
     initializeKeyInput();
     int count = 6, menu = 0, i;
-    char *text[6] = { "a. Beginner Mode", "b. Expert Mode", "c. Real Mode", "d. Scoreboard", "e. Help", "f: Exit" };
+    char *text[6] = { "a. 13 Practice Mode", "b. 16 Practice Mode", "c. Real Mode", "d. Scoreboard", "e. Help", "f: Exit" };
     while (1) {
         if (waitForKeyDown(0.1)) {
             char ch = getKeyEventASCII();
@@ -63,11 +63,17 @@ int ShowMenu() {
 
 int cmp (const void *a, const void *b) { return (*(int *)a - *(int *)b); }
 
-void Practice_13(int unsorted) {
-    putString(10, 5, "牌面:", 14, 2);
-    int i, j, hand[34] = {}, list[13], idx;
+void Practice(int type) {
+    char str_type[2];
+    sprintf(str_type, "%d", type);
+    Font *large_font = read_font("font.txt");
+    putStringLarge(large_font, 5, 2, str_type, 14);
+    putStringLarge(large_font, 5, 2, "   Practice Mode", 14);
+    destroy_font(large_font);
+    putString(5, 9, "牌面:", 14, 2);
+    int i, j, hand[34] = {}, list[16], idx;
     srand(time(NULL));
-    for (i = 0; i < 13; 1) {
+    for (i = 0; i < type; 1) {
         int rnd = rand(), num = 3;
         if (rnd % 3 == 0) idx = rnd % 34;
         else if (rnd % 3 == 1) idx = (idx + 35) % 34;
@@ -76,27 +82,19 @@ void Practice_13(int unsorted) {
         for (j = 0; j < num; ++j) list[i++] = idx;
         hand[idx] += num;
     }
-    // shuffle or sort
-    if (unsorted) {
-        for (i = 0; i < 13; ++i) {
-            int a = rand() % 13, b = rand() % 13;
-            list[a] ^= list[b] ^= list[a] ^= list[b];
-        }
-    }
-    else
-        qsort(list, 13, sizeof(int), cmp);
-    ShowMJ(10, list, 13);
+    qsort(list, type, sizeof(int), cmp);
+    ShowMJ(12, list, type);
     // Computer listen
     int listen[34] = {};
-    int listen_count = test(list, listen);
+    int listen_count = test(list, listen, type);
     // User listen
     int userListen[34] = {};
     ShowUserInput(userListen);
     // Show Computer listen
     char str_listen[2];
-    putString(10, 21, "電腦聽   張牌:", 14, 2);
+    putString(5, 21, "電腦聽   張牌:", 14, 2);
     sprintf(str_listen, "%d", listen_count);
-    putString(17, 21, str_listen, 14, 2);
+    putString(12, 21, str_listen, 14, 2);
     drawCmdWindow();
     ShowMJ(24, listen, listen_count);
     ShowResult(listen, listen_count, userListen);
@@ -124,13 +122,13 @@ const char* filename[34] = {
 
 void ShowMJ(const int y, const int* list, int count) {
     if (count == 0) {
-        putString(10, y, "N", 14, 2);
+        putString(5, y, "N", 14, 2);
     } else {
         int i;
         for (i = 0; i < count; ++i) {
-            putString(10 + i * 5, y - 1, "　　", 14, 2);
-            putString(10 + i * 5, y, mj[list[i]], 14, 2);
-            putString(10 + i * 5, y + 1, "　　", 14, 2);
+            putString(5 + i * 5, y - 1, "　　", 14, 2);
+            putString(5 + i * 5, y, mj[list[i]], 14, 2);
+            putString(5 + i * 5, y + 1, "　　", 14, 2);
         }
     }
     drawCmdWindow();
@@ -148,24 +146,24 @@ void ShowUserInput(int *listen) {
             else if (ch == 'a' || ch == VK_LEFT) --cur, cur = (cur + 34) % 34;
             else if (ch == 'd' || ch == VK_RIGHT) ++cur, cur = (cur + 34) % 34;
         }
-        putString(10, 15, "請選擇可能聽牌:", 14, 2);
+        putString(5, 15, "請選擇可能聽牌:", 14, 2);
         for (i = 0; i < 34; ++i) {
             if (cur == i) {
-                putString(10 + i * 5, 17, "　　", 10, 3);
-                putString(10 + i * 5, 18, mj[i], 10, 3);
-                putString(10 + i * 5, 19, "　　", 10, 3);
+                putString(5 + i * 5, 17, "　　", 10, 3);
+                putString(5 + i * 5, 18, mj[i], 10, 3);
+                putString(5 + i * 5, 19, "　　", 10, 3);
             } else if (listen[i]) {
-                putString(10 + i * 5, 17, "　　", 15, 3);
-                putString(10 + i * 5, 18, mj[i], 15, 3);
-                putString(10 + i * 5, 19, "　　", 15, 3);
+                putString(5 + i * 5, 17, "　　", 15, 3);
+                putString(5 + i * 5, 18, mj[i], 15, 3);
+                putString(5 + i * 5, 19, "　　", 15, 3);
             } else {
-                putString(10 + i * 5, 17, "　　", 14, 2);
-                putString(10 + i * 5, 18, mj[i], 14, 2);
-                putString(10 + i * 5, 19, "　　", 14, 2);
+                putString(5 + i * 5, 17, "　　", 14, 2);
+                putString(5 + i * 5, 18, mj[i], 14, 2);
+                putString(5 + i * 5, 19, "　　", 14, 2);
             }
         }
-        if (cur == -1) putString(10, 21, "確定", 15, 3);
-        else putString(10, 21, "確定", 14, 2);
+        if (cur == -1) putString(5, 21, "確定", 15, 3);
+        else putString(5, 21, "確定", 14, 2);
         drawCmdWindow();
     }
 }
